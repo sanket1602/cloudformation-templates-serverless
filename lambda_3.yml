@@ -25,9 +25,6 @@ Parameters:
     Type: String
     Description: sourcecodebucketkey
     Default: lambda_function_new/lambda_3.zip
-  LAMBDA_DESCRIPTION:
-    Type: String
-    Description: sourcecodebucketkey
 Resources:
   MyRole: 
     Type: "AWS::IAM::Role"
@@ -189,8 +186,6 @@ Resources:
           Value: !Ref tagenvironment
         - Key: Owner
           Value: Deepak
-        # - Key: LAMBDA_DESCRIPTION
-          # Value: !Ref LAMBDA_DESCRIPTION
   LambdaFunctionLogGroup:
     Type: "AWS::Logs::LogGroup"
     DependsOn: "MyLambda"
