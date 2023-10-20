@@ -177,7 +177,7 @@ Resources:
         S3Key: !Ref sourcecodebucketkey
       Tags:
         - Key: Project
-          Value: InstaGO
+          Value: InstaGO_prod
         - Key: Application
           Value: InstaGO          
         - Key: Name
@@ -185,7 +185,7 @@ Resources:
         - Key: Environment
           Value: !Ref tagenvironment
         - Key: Owner
-          Value: Deepak
+          Value: Deepak Pawar
   LambdaFunctionLogGroup:
     Type: "AWS::Logs::LogGroup"
     DependsOn: "MyLambda"
