@@ -11,8 +11,7 @@ phases:
   pre_build:
     commands:
       - chmod +x run.sh
-      - chmod +x variables.json
-      
+     
   build:
     commands:
       - echo "Updating cft update..."
