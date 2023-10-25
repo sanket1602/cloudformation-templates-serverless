@@ -171,7 +171,7 @@ Resources:
       Role: {"Fn::GetAtt" : ["MyRole", "Arn"] }       
       Description: ''
       MemorySize: 512
-      Timeout: 400
+      Timeout: 300
       Code: 
         S3Bucket: !Ref sourcecodebucketname
         S3Key: !Ref sourcecodebucketkey
