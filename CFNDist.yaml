@@ -1,0 +1,31 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Resources: 
+ myDistribution:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Origins:
+        - DomainName: instago-prod-gupshup.s3.amazonaws.com
+          Id: s3-origin-instago-prod-gupshup
+          S3OriginConfig:
+            OriginAccessIdentity: origin-access-identity/cloudfront/E27ONA8LVV0N34
+        Enabled: 'true'
+        Comment: A CFN Distribution to access files or images securly from instago-prod-gupshup bucket.
+        DefaultCacheBehavior:
+          AllowedMethods:
+          - DELETE
+          - GET
+          - HEAD
+          - OPTIONS
+          - PATCH
+          - POST
+          - PUT
+          TargetOriginId: s3-origin-instago-prod-gupshup
+          ForwardedValues:
+            QueryString: 'false'
+            Cookies:
+              Forward: none
+          ViewerProtocolPolicy: allow-all
+        PriceClass: PriceClass_All
+        ViewerCertificate:
+          CloudFrontDefaultCertificate: 'true'
