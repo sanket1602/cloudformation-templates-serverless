@@ -1,0 +1,49 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: "instago-prod-gupshup s3 bucket."
+Parameters:
+  S3BucketName:
+    Type: "String"
+    Default: "instago-prod-gupshup"
+    Description: Name of the bucket to be created
+  ProjectTag:
+    Description: Name Of the project
+    Type: String
+    Default: "InstaGO"
+  OwnerTag:
+    Description: Name Of the Project Owner
+    Type: String
+    Default: "Monish Parekh"
+  EnvTag:
+    Description: Name Of the Env of the Resource
+    Type: String
+    Default: "Production"
+  ApplicationTag:
+    Description: Name Of the Env of the Resource
+    Type: String
+    Default: "InstaGO"    
+Resources:
+  s3Bucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
+    Properties:
+      BucketName: !Ref 'S3BucketName'
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: False
+        BlockPublicPolicy: False
+        IgnorePublicAcls: False
+        RestrictPublicBuckets: False      
+      Tags:
+        - Key: Name
+          Value: !Ref 'S3BucketName'
+        - Key: Owner
+          Value: !Ref 'OwnerTag'
+        - Key: Project
+          Value: !Ref 'ProjectTag'
+        - Key: Environment
+          Value: !Ref 'EnvTag'
+        - Key: Application
+          Value: !Ref 'ApplicationTag'      
+        - Key: Production
+          Value: ""
+        - Key: InstaGO
+          Value: ""
