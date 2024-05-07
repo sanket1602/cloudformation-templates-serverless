@@ -1,0 +1,122 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: A template to update ECS cloudwatch events.
+Parameters:
+  ClusterARN:
+    Type: String
+    Description: ARN of cluster
+    Default: arn:aws:ecs:ap-south-1:251899213637:cluster/instago-prod-cluster
+  TaskDefintionName:
+    Type: String
+    Description: Name of Task Definition
+    Default: InstaGO_prod_attendance_branch_time_spent_closure
+  TaskDefintionARN:
+    Type: String
+    Description: ARN of Task Definition
+    Default: arn:aws:ecs:ap-south-1:251899213637:task-definition/InstaGO_prod_attendance_branch_time_spent_closure 
+  SecurityGroup:
+    Type: String
+    Description: SecurityGroup for Task
+    Default: sg-080df6d0bea90ff91
+  Subnets:
+    Type: String
+    Description: Subnets of task 
+    Default: subnet-00c0e2b6c07748c56
+  EventName:
+    Type: String
+    Description: InstaGO_prod_attendance_branch_time_spent_closure_ECS_CW
+    Default: InstaGO_prod_attendance_branch_time_spent_closure_ECS_CW
+  tagenvironment:
+    Type: String
+    Description: Environment name, eg PreProd,Production
+    Default: Production
+  OwnerTag:
+    Description: Name Of the Project Owner
+    Type: String
+    Default: "Monish Parekh"
+  ProjectTag:
+    Description: Name Of the project
+    Type: String
+    Default: "InstaGO"
+  ApplicationTag:
+    Description: Name Of the project
+    Type: String
+    Default: "InstaGO"    
+  EnvTag:
+    Description: Environment of the resource
+    Type: String
+    Default: "Production"    
+Resources:
+  EventRule:
+    Type: AWS::Events::Rule
+    Properties: 
+      Description: This invokes ecs task definition ( InstaGO_prod_attendance_branch_time_spent_closure)
+      ScheduleExpression: 'cron(30 13 * * ? *)'
+      Name: !Ref EventName
+      State: ENABLED
+      Targets: 
+        - Id:  !Ref TaskDefintionName
+          RoleArn: 
+            'Fn::GetAtt':
+              - ExecutionRole
+              - Arn
+          EcsParameters:
+            TaskDefinitionArn: !Ref TaskDefintionARN
+            LaunchType: 'FARGATE'
+            NetworkConfiguration:
+              AwsVpcConfiguration:
+                AssignPublicIp: DISABLED
+                SecurityGroups:
+                  - !Ref SecurityGroup
+                Subnets:
+                  - !Ref Subnets
+          Arn: !Ref ClusterARN
+  ExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: InstaGO_prod_attendance_branch_time_spent_closure
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: events.amazonaws.com
+            Action: 'sts:AssumeRole'
+      Path: "/"
+      Tags:
+        - Key: Project
+          Value: InstaGO
+        - Key: Name
+          Value: !Join
+            - ''
+            - - !Ref TaskDefintionName
+              - _Role
+        - Key: Owner
+          Value: !Ref 'OwnerTag'
+        - Key: Project
+          Value: !Ref 'ProjectTag'
+        - Key: Application
+          Value: !Ref 'ApplicationTag'
+        - Key: Environment
+          Value: !Ref 'EnvTag'
+        - Key: !Ref 'ProjectTag'
+          Value: " "
+        - Key: !Ref 'EnvTag'
+          Value: " "
+      Policies:
+      - PolicyName: InstaGO_prod_attendance_branch_time_spent_closure
+        PolicyDocument:
+          Version: 2012-10-17
+          Statement:
+            - Effect: Allow
+              Action:
+                - 'ecs:RunTask' 
+              Resource: '*'
+              Condition:
+                ArnLike: 
+                  'ecs:cluster': !Ref ClusterARN
+            - Effect: Allow
+              Action: 'iam:PassRole'
+              Resource:
+                - '*'
+              Condition:
+                StringLike:
+                  'iam:PassedToService': ecs-tasks.amazonaws.com
