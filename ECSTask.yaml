@@ -1,0 +1,182 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: A CloudFormation template for incomplete attendance system closure Task Definition
+Parameters:
+  Image:
+    Type: String
+    Description: 'Full Image name, eg (repository-url/image:tag)'
+    Default: 251899213637.dkr.ecr.ap-south-1.amazonaws.com/instago-prod:attendance_branch_time_spent_closure
+  ContainerName:
+    Type: String
+    Default: InstaGO_prod_attendance_branch_time_spent_closure
+  TaskDefintionName:
+    Type: String
+    Default: InstaGO_prod_attendance_branch_time_spent_closure
+  tagenvironment:
+    Type: String
+    Description: 'Environment name, eg PreProd,Production'
+    Default: "Production"
+Resources:
+  LogGroup:
+    Type: AWS::Logs::LogGroup
+    DeletionPolicy: Retain
+    Properties:
+      LogGroupName: /ecs/InstaGO_prod_attendance_branch_time_spent_closure
+      RetentionInDays: 7
+  ExecutionRole:
+    Type: "AWS::IAM::Role"
+    Properties: 
+      Description: "ECS Task Execution IAM Role"
+      RoleName: InstaGO_prod_attendance_branch_time_spent_closure_Role
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          -
+            Effect: "Allow"
+            Principal:
+              Service:
+                - "ecs-tasks.amazonaws.com"
+            Action:
+              - "sts:AssumeRole"
+      Path: "/"
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy
+      Tags:
+        - Key: Project
+          Value: InstaGO
+        - Key: Name
+          Value: InstaGO_prod_attendance_branch_time_spent_closure
+        - Key: Environment
+          Value: Production
+        - Key: Owner
+          Value: Monish Parekh
+        - Key: Application
+          Value: InstaGO
+  MyRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      Description: "ECS Task IAM Role"
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          -
+            Effect: "Allow"
+            Principal:
+              Service:
+                - "ecs-tasks.amazonaws.com"
+            Action:
+              - "sts:AssumeRole"
+      Path: "/"
+      RoleName: InstaGO_prod_attendance_branch_time_spent_closure_TaskRole
+      Tags:
+        - Key: Project
+          Value: InstaGO
+        - Key: Name
+          Value: InstaGO_prod_attendance_branch_time_spent_closure
+        - Key: Environment
+          Value: Production
+        - Key: Owner
+          Value: Monish Parekh
+        - Key: Application
+          Value: InstaGO
+  MyRolePolicies: 
+    Type: "AWS::IAM::Policy"
+    DependsOn: TaskDefinition
+    Properties: 
+      PolicyName: InstaGO_prod_attendance_branch_time_spent_closure_policy
+      PolicyDocument: 
+        Version: "2012-10-17"
+        Statement:
+          - ##DyanmoDB Access
+            Sid: VisualEditor0
+            Action:
+              - dynamodb:DescribeTable
+              - dynamodb:GetItem
+              - dynamodb:BatchGetItem
+              - dynamodb:Scan
+              - dynamodb:ConditionCheckItem
+              - dynamodb:BatchWriteItem
+              - dynamodb:UpdateItem
+              - dynamodb:Query
+              - dynamodb:DescribeGlobalTableSettings
+              - dynamodb:DescribeGlobalTable
+            Effect: Allow
+            Resource:
+              - arn:aws:dynamodb:ap-south-1:251899213637:table/Instago_prod_h1_fc_attendance_details*
+              - arn:aws:dynamodb:ap-south-1:251899213637:table/Instago_prod_h1_fc_attendance_details/index/*
+          - ##Cloudwatch log Access
+            Sid: VisualEditor1
+            Effect: Allow
+            Action:
+              - logs:List*
+              - cloudwatch:List*
+              - logs:List*
+              - logs:GetLogRecord
+              - logs:DescribeLogStreams
+              - logs:DescribeSubscriptionFilters
+              - logs:StartQuery
+              - logs:DescribeMetricFilters
+              - logs:GetLogDelivery
+              - logs:CreateLogStream
+              - logs:TagLogGroup
+              - logs:GetLogEvents
+              - logs:FilterLogEvents
+              - logs:DescribeResourcePolicies
+              - logs:DescribeDestinations
+              - logs:DescribeQueries
+              - logs:UntagLogGroup
+              - logs:DescribeLogGroups
+              - logs:StopQuery
+              - logs:TestMetricFilter
+              - logs:PutLogEvents
+              - logs:CreateLogGroup
+              - logs:DescribeExportTasks
+              - logs:GetQueryResults
+              - logs:PutRetentionPolicy
+              - logs:GetLogGroupFields
+            Resource: "*" 
+            Sid: VisualEditor2
+            Effect: "Allow"
+            Action:
+              - ecs:StartTask
+              - ecs:RunTask
+              - ecs:RunTask
+              - ecs:DescribeTasks
+              - ecs:ListTaskDefinitions
+            Resource: "*"
+      Roles:
+        -
+          Ref: "MyRole"
+
+  TaskDefinition:
+    Type: AWS::ECS::TaskDefinition
+    UpdateReplacePolicy: Retain
+    Properties:
+      Family: !Ref TaskDefintionName
+      Cpu: 4096
+      Memory: 8GB
+      NetworkMode: awsvpc
+      ExecutionRoleArn: !Ref ExecutionRole
+      ContainerDefinitions:
+        - Name: !Ref ContainerName
+          Image: !Ref Image
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-region: !Ref AWS::Region
+              awslogs-group: !Ref LogGroup
+              awslogs-stream-prefix: ecs 
+      RequiresCompatibilities:
+        - FARGATE
+      Tags:
+        - Key: Project
+          Value: InstaGO
+        - Key: Name
+          Value: InstaGO_prod_attendance_branch_time_spent_closure
+        - Key: Environment
+          Value: Production
+        - Key: Owner
+          Value: Monish Parekh
+        - Key: Application
+          Value: InstaGO
+      TaskRoleArn:
+        Fn::GetAtt: [ MyRole , "Arn" ]
