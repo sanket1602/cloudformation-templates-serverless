@@ -1,0 +1,28 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: s3 bucket creation
+
+Resources:
+  s3Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: instago-prod-lead-meetings-data
+      AccessControl: Private
+      Tags:
+        - Key: Name
+          Value: instago-prod-lead-meetings-data
+        - Key: Owner
+          Value: Monish Parekh
+        - Key: Project
+          Value: InstaGO
+        - Key: Enviorment
+          Value: Prod
+        - Key: Application
+          Value: InstaGO
+         
+         
+Outputs:
+  BucketName:
+    Description: s3 bucket
+    Value: !Ref s3Bucket
+    Export: 
+      Name: !Sub "${AWS::StackName}-BucketName" 
