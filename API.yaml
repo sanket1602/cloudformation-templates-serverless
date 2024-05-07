@@ -1,0 +1,158 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: This CloudFormation template will create an AWS Rest API resource with a s3 Integration.
+Parameters:
+  ApiGatewayRestApi:
+    Type: String
+    Default: instago-app-prod
+  ApiGatewayRestApiId:
+    Type: String
+    Default: eu0jnmmvr6
+  ApiGatewayRestApiParentId:
+    Type: String
+    Default: isybrm40lh
+  ApiPath:
+    Type: String
+    Default: annexure-meeting-media-upload
+  ApiGatewayStageName:
+    Type: String
+    Default: alpha
+  ApiGatewayHTTPMethod:
+    Type: String
+    Default: GET
+  AwsRegion:
+    Type: String
+    Default: ap-south-1
+
+Resources:
+  ApiGatewayResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      ParentId: !Ref ApiGatewayRestApiParentId
+      PathPart: !Ref ApiPath
+      RestApiId: !Ref ApiGatewayRestApiId
+  FolderResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      ParentId: !Ref ApiGatewayResource
+      RestApiId: !Ref ApiGatewayRestApiId
+      PathPart: "{folder}"
+  ObjectResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      ParentId: !Ref FolderResource
+      RestApiId: !Ref ApiGatewayRestApiId
+      PathPart: "{object}"
+
+  ApiGatewayIamRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: ""
+            Effect: "Allow"
+            Principal:
+              Service:
+                - "apigateway.amazonaws.com"
+            Action:
+              - "sts:AssumeRole"
+      Path: "/"
+      Policies:
+        - PolicyName: api-gateway-upload-to-s3-policy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:Put*
+                  - s3:Get*
+                  - s3:List*
+                Resource:
+                  -  arn:aws:s3:::instago-prod-lead-meetings-data
+                  -  arn:aws:s3:::instago-prod-lead-meetings-data/*
+
+  OptionsMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      AuthorizationType: NONE
+      RestApiId: !Ref ApiGatewayRestApiId
+      ResourceId: !Ref ObjectResource
+      HttpMethod: OPTIONS
+      Integration:
+        IntegrationResponses:
+        - StatusCode: 200
+          ResponseParameters:
+            method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,jToken,jtoken'"
+            method.response.header.Access-Control-Allow-Methods: "'PUT,OPTIONS'"
+            method.response.header.Access-Control-Allow-Origin: "'https://www.hdfclife.com'"
+          ResponseTemplates:
+            application/json: ''
+        PassthroughBehavior: WHEN_NO_MATCH
+        RequestTemplates:
+          application/json: '{"statusCode": 200}'
+        Type: MOCK
+      MethodResponses:
+      - StatusCode: 200
+        ResponseModels:
+          application/json: 'Empty'
+        ResponseParameters:
+            method.response.header.Access-Control-Allow-Headers: true
+            method.response.header.Access-Control-Allow-Methods: true
+            method.response.header.Access-Control-Allow-Origin: true
+
+
+  PutMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      AuthorizationType: NONE
+      HttpMethod: PUT
+      ResourceId: !Ref ObjectResource
+      RestApiId: !Ref ApiGatewayRestApiId
+      RequestParameters:
+        method.request.path.folder: true
+        method.request.path.object: true
+        method.request.header.Accept: true
+        method.request.header.Content-Type: true
+
+      Integration:
+        IntegrationHttpMethod: PUT
+        Type: AWS
+        Uri: "arn:aws:apigateway:ap-south-1:s3:path/{bucket}/{key}"
+        Credentials: !GetAtt ApiGatewayIamRole.Arn
+        PassthroughBehavior: WHEN_NO_MATCH
+        RequestParameters:
+          integration.request.path.bucket: "method.request.path.folder"
+          integration.request.path.key: "method.request.path.object"
+          integration.request.header.Accept: "method.request.header.Accept"
+          integration.request.header.Content-Type: "method.request.header.Content-Type"
+          integration.request.header.x-amz-aci: "'authenticated-read'"
+        IntegrationResponses:
+        - StatusCode: '200'
+          ResponseParameters:
+            method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,jtoken,jToken'"
+            method.response.header.Access-Control-Allow-Methods: "'OPTIONS,PUT'"
+            method.response.header.Content-Security-Policy: "'default-src 'self' *.hdfclife.com;img-src 'self' blob: https: data:; script-src 'self' *.hdfclife.com; style-src 'self' *.googleapis.com; font-src 'self' 'unsafe-inline' data: fonts.gstatic.com; connect-src blob: gap: 'self' blob: data: * 'self' 'unsafe-inline' 'unsafe-eval' content'"
+            method.response.header.Strict-Transport-Security: "'max-age=31536000; includeSubDomains; preload'"
+            method.response.header.X-Content-Type-Options: "'nosniff'"
+            method.response.header.X-Frame-Options: "'SAMEORIGIN'"
+            method.response.header.X-XSS-Protection: "'1; mode=block'"
+            method.response.header.Access-Control-Allow-Origin: "'https://www.hdfclife.com'"
+      MethodResponses:
+      - StatusCode: '200'
+        ResponseModels:
+          application/json: 'Empty'
+        ResponseParameters:
+          method.response.header.Access-Control-Allow-Headers: true
+          method.response.header.Access-Control-Allow-Methods: true
+          method.response.header.Content-Security-Policy: true
+          method.response.header.Strict-Transport-Security: true
+          method.response.header.X-Content-Type-Options: true
+          method.response.header.X-Frame-Options: true
+          method.response.header.X-XSS-Protection: true
+          method.response.header.Access-Control-Allow-Origin: true
+  ApiGatewayDeployment:
+    Type: AWS::ApiGateway::Deployment
+    Properties:
+      Description: Lambda API Deployment
+      RestApiId: !Ref ApiGatewayRestApiId
+      StageName: !Ref ApiGatewayStageName
