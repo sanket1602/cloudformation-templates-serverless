@@ -3,16 +3,16 @@ Description: This CloudFormation template will create an AWS Rest API resource w
 Parameters:
   ApiGatewayRestApi:
     Type: String
-    Default: instago-app-prod
+    Default: <value>
   ApiGatewayRestApiId:
     Type: String
-    Default: eu0jnmmvr6
+    Default: <value>
   ApiGatewayRestApiParentId:
     Type: String
-    Default: isybrm40lh
+    Default: <value>
   ApiPath:
     Type: String
-    Default: annexure-meeting-media-upload
+    Default: <value>
   ApiGatewayStageName:
     Type: String
     Default: alpha
@@ -21,7 +21,7 @@ Parameters:
     Default: GET
   AwsRegion:
     Type: String
-    Default: ap-south-1
+    Default: <your-region>
 
 Resources:
   ApiGatewayResource:
@@ -58,7 +58,7 @@ Resources:
               - "sts:AssumeRole"
       Path: "/"
       Policies:
-        - PolicyName: api-gateway-upload-to-s3-policy
+        - PolicyName: <your-policy>
           PolicyDocument:
             Version: "2012-10-17"
             Statement:
@@ -68,8 +68,7 @@ Resources:
                   - s3:Get*
                   - s3:List*
                 Resource:
-                  -  arn:aws:s3:::instago-prod-lead-meetings-data
-                  -  arn:aws:s3:::instago-prod-lead-meetings-data/*
+                  - <your resource name or *>
 
   OptionsMethod:
     Type: AWS::ApiGateway::Method
