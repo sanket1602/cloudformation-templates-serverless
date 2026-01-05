@@ -1,16 +1,16 @@
 AWSTemplateFormatVersion: 2010-09-09
-Description: A CloudFormation template for incomplete attendance system closure Task Definition
+Description: A CloudFormation template an ECS Task Definition
 Parameters:
   Image:
     Type: String
     Description: 'Full Image name, eg (repository-url/image:tag)'
-    Default: 251899213637.dkr.ecr.ap-south-1.amazonaws.com/instago-prod:attendance_branch_time_spent_closure
+    Default: <image-tag>
   ContainerName:
     Type: String
-    Default: InstaGO_prod_attendance_branch_time_spent_closure
+    Default: <value>
   TaskDefintionName:
     Type: String
-    Default: InstaGO_prod_attendance_branch_time_spent_closure
+    Default: <value>
   tagenvironment:
     Type: String
     Description: 'Environment name, eg PreProd,Production'
@@ -20,13 +20,13 @@ Resources:
     Type: AWS::Logs::LogGroup
     DeletionPolicy: Retain
     Properties:
-      LogGroupName: /ecs/InstaGO_prod_attendance_branch_time_spent_closure
-      RetentionInDays: 7
+      LogGroupName: /ecs/<value>
+      RetentionInDays: <value>
   ExecutionRole:
     Type: "AWS::IAM::Role"
     Properties: 
       Description: "ECS Task Execution IAM Role"
-      RoleName: InstaGO_prod_attendance_branch_time_spent_closure_Role
+      RoleName: <value>
       AssumeRolePolicyDocument:
         Version: "2012-10-17"
         Statement:
@@ -39,18 +39,18 @@ Resources:
               - "sts:AssumeRole"
       Path: "/"
       ManagedPolicyArns:
-        - arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy
+        - <policy-arn>
       Tags:
         - Key: Project
-          Value: InstaGO
+          Value: <value>
         - Key: Name
-          Value: InstaGO_prod_attendance_branch_time_spent_closure
+          Value: <value>
         - Key: Environment
-          Value: Production
+          Value: <value>
         - Key: Owner
-          Value: Monish Parekh
+          Value: <value>
         - Key: Application
-          Value: InstaGO
+          Value: <value>
   MyRole:
     Type: "AWS::IAM::Role"
     Properties:
@@ -66,23 +66,23 @@ Resources:
             Action:
               - "sts:AssumeRole"
       Path: "/"
-      RoleName: InstaGO_prod_attendance_branch_time_spent_closure_TaskRole
+      RoleName: <value>
       Tags:
         - Key: Project
           Value: InstaGO
         - Key: Name
-          Value: InstaGO_prod_attendance_branch_time_spent_closure
+          Value: <value>
         - Key: Environment
-          Value: Production
+          Value: <value>
         - Key: Owner
-          Value: Monish Parekh
+          Value: <value>
         - Key: Application
-          Value: InstaGO
+          Value: <value>
   MyRolePolicies: 
     Type: "AWS::IAM::Policy"
     DependsOn: TaskDefinition
     Properties: 
-      PolicyName: InstaGO_prod_attendance_branch_time_spent_closure_policy
+      PolicyName: <value>
       PolicyDocument: 
         Version: "2012-10-17"
         Statement:
@@ -101,8 +101,7 @@ Resources:
               - dynamodb:DescribeGlobalTable
             Effect: Allow
             Resource:
-              - arn:aws:dynamodb:ap-south-1:251899213637:table/Instago_prod_h1_fc_attendance_details*
-              - arn:aws:dynamodb:ap-south-1:251899213637:table/Instago_prod_h1_fc_attendance_details/index/*
+              - <Resource-arn or *>
           - ##Cloudwatch log Access
             Sid: VisualEditor1
             Effect: Allow
@@ -171,11 +170,11 @@ Resources:
         - Key: Project
           Value: InstaGO
         - Key: Name
-          Value: InstaGO_prod_attendance_branch_time_spent_closure
+          Value: <value>
         - Key: Environment
-          Value: Production
+          Value: <value>
         - Key: Owner
-          Value: Monish Parekh
+          Value: <value>
         - Key: Application
           Value: InstaGO
       TaskRoleArn:
