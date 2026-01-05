@@ -5,12 +5,12 @@ Resources:
     Properties:
       DistributionConfig:
         Origins:
-        - DomainName: instago-prod-gupshup.s3.amazonaws.com
-          Id: s3-origin-instago-prod-gupshup
+        - DomainName: <your-domain-name>
+          Id: <value>
           S3OriginConfig:
-            OriginAccessIdentity: origin-access-identity/cloudfront/E27ONA8LVV0N34
+            OriginAccessIdentity: <value>
         Enabled: 'true'
-        Comment: A CFN Distribution to access files or images securly from instago-prod-gupshup bucket.
+        Comment: <value>
         DefaultCacheBehavior:
           AllowedMethods:
           - DELETE
@@ -20,7 +20,7 @@ Resources:
           - PATCH
           - POST
           - PUT
-          TargetOriginId: s3-origin-instago-prod-gupshup
+          TargetOriginId: <value>
           ForwardedValues:
             QueryString: 'false'
             Cookies:
