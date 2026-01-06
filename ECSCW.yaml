@@ -4,53 +4,53 @@ Parameters:
   ClusterARN:
     Type: String
     Description: ARN of cluster
-    Default: arn:aws:ecs:ap-south-1:251899213637:cluster/instago-prod-cluster
+    Default: <your-cluster-arn>
   TaskDefintionName:
     Type: String
     Description: Name of Task Definition
-    Default: InstaGO_prod_attendance_branch_time_spent_closure
+    Default: <your-task-definition-name>
   TaskDefintionARN:
     Type: String
     Description: ARN of Task Definition
-    Default: arn:aws:ecs:ap-south-1:251899213637:task-definition/InstaGO_prod_attendance_branch_time_spent_closure 
+    Default: <your-task-definition-ARN>
   SecurityGroup:
     Type: String
     Description: SecurityGroup for Task
-    Default: sg-080df6d0bea90ff91
+    Default: <your-sg-id>
   Subnets:
     Type: String
     Description: Subnets of task 
-    Default: subnet-00c0e2b6c07748c56
+    Default: <your-subnet>
   EventName:
     Type: String
-    Description: InstaGO_prod_attendance_branch_time_spent_closure_ECS_CW
-    Default: InstaGO_prod_attendance_branch_time_spent_closure_ECS_CW
+    Description: <your description>
+    Default: <your-event-rule-name>
   tagenvironment:
     Type: String
     Description: Environment name, eg PreProd,Production
-    Default: Production
+    Default: <value>
   OwnerTag:
     Description: Name Of the Project Owner
     Type: String
-    Default: "Monish Parekh"
+    Default: <value>
   ProjectTag:
     Description: Name Of the project
     Type: String
-    Default: "InstaGO"
+    Default: <value>
   ApplicationTag:
     Description: Name Of the project
     Type: String
-    Default: "InstaGO"    
+    Default: <value>   
   EnvTag:
     Description: Environment of the resource
     Type: String
-    Default: "Production"    
+    Default: <value>  
 Resources:
   EventRule:
     Type: AWS::Events::Rule
     Properties: 
-      Description: This invokes ecs task definition ( InstaGO_prod_attendance_branch_time_spent_closure)
-      ScheduleExpression: 'cron(30 13 * * ? *)'
+      Description: <your-description>
+      ScheduleExpression: 'cron(* * * * *)'
       Name: !Ref EventName
       State: ENABLED
       Targets: 
@@ -73,7 +73,7 @@ Resources:
   ExecutionRole:
     Type: AWS::IAM::Role
     Properties:
-      RoleName: InstaGO_prod_attendance_branch_time_spent_closure
+      RoleName: <your-iam-role-name>
       AssumeRolePolicyDocument:
         Statement:
           - Effect: Allow
@@ -102,7 +102,7 @@ Resources:
         - Key: !Ref 'EnvTag'
           Value: " "
       Policies:
-      - PolicyName: InstaGO_prod_attendance_branch_time_spent_closure
+      - PolicyName: <your-iam-policy-name>
         PolicyDocument:
           Version: 2012-10-17
           Statement:
