@@ -1,26 +1,26 @@
 AWSTemplateFormatVersion: 2010-09-09
-Description: "instago-prod-gupshup s3 bucket."
+Description: "This CloudFormation Template creates a private S3 Bucket"
 Parameters:
   S3BucketName:
     Type: "String"
-    Default: "instago-prod-gupshup"
+    Default: "<desired-bucket-name"
     Description: Name of the bucket to be created
   ProjectTag:
     Description: Name Of the project
     Type: String
-    Default: "InstaGO"
+    Default: "<value>"
   OwnerTag:
     Description: Name Of the Project Owner
     Type: String
-    Default: "Monish Parekh"
+    Default: "<value>"
   EnvTag:
     Description: Name Of the Env of the Resource
     Type: String
-    Default: "Production"
+    Default: "<value>"
   ApplicationTag:
     Description: Name Of the Env of the Resource
     Type: String
-    Default: "InstaGO"    
+    Default: "<value>"    
 Resources:
   s3Bucket:
     Type: AWS::S3::Bucket
@@ -35,15 +35,15 @@ Resources:
       Tags:
         - Key: Name
           Value: !Ref 'S3BucketName'
-        - Key: Owner
+        - Key: <value>
           Value: !Ref 'OwnerTag'
-        - Key: Project
+        - Key: <value>
           Value: !Ref 'ProjectTag'
-        - Key: Environment
+        - Key: <value>
           Value: !Ref 'EnvTag'
-        - Key: Application
+        - Key: <value>
           Value: !Ref 'ApplicationTag'      
-        - Key: Production
+        - Key: <value>
           Value: ""
-        - Key: InstaGO
+        - Key: <value>
           Value: ""
