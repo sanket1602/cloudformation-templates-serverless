@@ -1,30 +1,30 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: "Instago prod Thin SSO qliksense lambda CFT test deployment test"
+Description: "Your Description"
 Parameters:
   LambdaFunctionName: 
     Type: String
     Description: Name of the Lambda Function to be created
-    Default: lambda_2
+    Default: <value>
   tagenvironment:
     Type: String
     Description: This is tagenvironment
-    Default: UAT
+    Default: <value>
   s3bucket:
     Type: String
     Description: Name of s3 bucket 
-    Default: github-actions-1-dmo
+    Default: <value>
   reportingdatapath:
     Type: String
     Description: Name of reporting data path
-    Default: mis_data_reporting
+    Default: <value>
   sourcecodebucketname:
     Type: String
     Description: sourcecodebucketname
-    Default: github-actions-1-dmo
+    Default: <value>
   sourcecodebucketkey:
     Type: String
     Description: sourcecodebucketkey
-    Default: lambda_function_new/lambda_2.zip
+    Default: <value>
 Resources:
   MyRole: 
     Type: "AWS::IAM::Role"
@@ -46,23 +46,23 @@ Resources:
               - _LambdaRole
       Tags:
         - Key: Project
-          Value: InstaGO
+          Value: <value>
         - Key: Application
-          Value: InstaGO          
+          Value: <value>          
         - Key: Name
-          Value: !Join
+          Value: !Join ## This joins the rolename into your resource name by using the !Join function
             - ''
             - - !Ref LambdaFunctionName
               - _LambdaRole
         - Key: Environment
           Value: !Ref tagenvironment
         - Key: Owner
-          Value: Deepak          
+          Value: <value>          
   MyRolePolicies: 
     Type: "AWS::IAM::Policy"
     DependsOn: MyRole
     Properties: 
-      PolicyName: InstaGO_prod_generic_mis_data_incremental_LambdaRole_Policy
+      PolicyName: <value>
       PolicyDocument: 
         Version: "2012-10-17"
         Statement: 
@@ -78,8 +78,7 @@ Resources:
               - s3:GetObjectVersion
               - s3:PutObject
             Resource:
-              - arn:aws:s3:::github-actions-1-dmo
-              - arn:aws:s3:::github-actions-1-dmo/*
+              - "*"
          - ##EC2 access
             Sid: VisualEditor1      
             Effect: Allow
@@ -106,8 +105,7 @@ Resources:
               - dynamodb:DescribeGlobalTable
             Effect: Allow
             Resource:
-              - arn:aws:dynamodb:ap-south-1:251899213637:table/InstaGO_prod_h1_lead_details*
-              - arn:aws:dynamodb:ap-south-1:251899213637:table/InstaGO_prod_lead_reallocation_transfer_journey*
+              - "*"
          - ##DyanmoDB Stream Access
             Sid: VisualEditor3
             Effect: Allow
@@ -117,7 +115,7 @@ Resources:
               - dynamodb:DescribeStream
               - dynamodb:ListStreams
             Resource:
-              - arn:aws:dynamodb:ap-south-1:251899213637:table/InstaGO_prod_h1_lead_details/stream/*
+              - "*"
             Sid: VisualEditor4         
             Action: cloudwatch:*
             Effect: Allow
@@ -177,17 +175,17 @@ Resources:
         S3Key: !Ref sourcecodebucketkey
       Tags:
         - Key: Project
-          Value: InstaGO
+          Value: <value>
         - Key: Application
-          Value: InstaGO          
+          Value: <value>          
         - Key: Name
           Value: !Ref LambdaFunctionName
         - Key: Environment
           Value: !Ref tagenvironment
         - Key: Owner
-          Value: Deepak
+          Value: <value>
         - Key: Describe
-          Value: mis update
+          Value: <value>
   LambdaFunctionLogGroup:
     Type: "AWS::Logs::LogGroup"
     DependsOn: "MyLambda"
