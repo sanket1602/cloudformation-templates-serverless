@@ -1,0 +1,38 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: CloudWatch alarm for EC2 CPU utilization above 75%
+
+Parameters:
+  InstanceId:
+    Type: String
+    Description: EC2 Instance ID to monitor
+
+  SnsTopicArn:
+    Type: String
+    Description: Existing SNS Topic ARN for alarm notifications
+
+Resources:
+  HighCpuAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub "EC2-CPU-Alarm-${InstanceId}"
+      AlarmDescription: "Alarm triggers when EC2 CPU utilization exceeds 75%"
+      Namespace: AWS/EC2
+      MetricName: CPUUtilization
+      Dimensions:
+        - Name: InstanceId
+          Value: !Ref InstanceId
+      Statistic: Average
+      Period: 300
+      EvaluationPeriods: 2
+      Threshold: 75
+      ComparisonOperator: GreaterThanThreshold
+      TreatMissingData: notBreaching
+      AlarmActions:
+        - !Ref SnsTopicArn
+      OKActions:
+        - !Ref SnsTopicArn
+
+Outputs:
+  AlarmName:
+    Description: Name of the CloudWatch Alarm
+    Value: !Ref HighCpuAlarm
