@@ -14,7 +14,7 @@ Resources:
   HighCpuAlarm:
     Type: AWS::CloudWatch::Alarm
     Properties:
-      AlarmName: !Sub "EC2-CPU-Alarm-${InstanceId} (Node)"
+      AlarmName: !Sub "EC2-CPU-Alarm-${InstanceId}"
       AlarmDescription: "Alarm triggers when EC2 CPU utilization exceeds 75%"
       Namespace: AWS/EC2
       MetricName: CPUUtilization
